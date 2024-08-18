@@ -230,7 +230,7 @@ struct VectorInitializationVisitor<'a, 'tcx> {
     initialization_found: bool,
 }
 
-impl<'a, 'tcx> VectorInitializationVisitor<'a, 'tcx> {
+impl<'tcx> VectorInitializationVisitor<'_, 'tcx> {
     /// Checks if the given expression is extending a vector with `repeat(0).take(..)`
     fn search_slow_extend_filling(&mut self, expr: &'tcx Expr<'_>) {
         if self.initialization_found
@@ -300,7 +300,7 @@ impl<'a, 'tcx> VectorInitializationVisitor<'a, 'tcx> {
     }
 }
 
-impl<'a, 'tcx> Visitor<'tcx> for VectorInitializationVisitor<'a, 'tcx> {
+impl<'tcx> Visitor<'tcx> for VectorInitializationVisitor<'_, 'tcx> {
     fn visit_stmt(&mut self, stmt: &'tcx Stmt<'_>) {
         if self.initialization_found {
             match stmt.kind {

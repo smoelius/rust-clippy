@@ -218,7 +218,7 @@ struct FormatArgsExpr<'a, 'tcx> {
     ignore_mixed: bool,
 }
 
-impl<'a, 'tcx> FormatArgsExpr<'a, 'tcx> {
+impl FormatArgsExpr<'_, '_> {
     fn check_templates(&self) {
         for piece in &self.format_args.template {
             if let FormatArgsPiece::Placeholder(placeholder) = piece
