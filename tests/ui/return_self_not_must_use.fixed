@@ -7,6 +7,7 @@
 pub struct Bar;
 
 pub trait Whatever {
+    #[must_use] 
     fn what(&self) -> Self;
     //~^ return_self_not_must_use
 
@@ -19,11 +20,13 @@ impl Bar {
     pub fn not_new() -> Self {
         Self
     }
+    #[must_use] 
     pub fn foo(&self) -> Self {
         //~^ return_self_not_must_use
 
         Self
     }
+    #[must_use] 
     pub fn bar(self) -> Self {
         //~^ return_self_not_must_use
 

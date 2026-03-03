@@ -1,11 +1,14 @@
-use clippy_utils::diagnostics::span_lint_and_help;
+use clippy_utils::diagnostics::span_lint_and_then;
+use clippy_utils::source::snippet_indent;
 use clippy_utils::ty::is_must_use_ty;
 use clippy_utils::{nth_arg, return_ty};
+use rustc_errors::Applicability;
 use rustc_hir::attrs::AttributeKind;
 use rustc_hir::def_id::LocalDefId;
 use rustc_hir::intravisit::FnKind;
 use rustc_hir::{Body, FnDecl, OwnerId, TraitItem, TraitItemKind, find_attr};
 use rustc_lint::{LateContext, LateLintPass, LintContext};
+use rustc_middle::ty;
 use rustc_session::declare_lint_pass;
 use rustc_span::Span;
 
@@ -90,13 +93,31 @@ fn check_method(cx: &LateContext<'_>, decl: &FnDecl<'_>, fn_def: LocalDefId, spa
         // If `Self` is already marked as `#[must_use]`, no need for the attribute here.
         && !is_must_use_ty(cx, ret_ty)
     {
-        span_lint_and_help(
+        span_lint_and_then(
             cx,
             RETURN_SELF_NOT_MUST_USE,
             span,
             "missing `#[must_use]` attribute on a method returning `Self`",
-            None,
-            "consider adding the `#[must_use]` attribute to the method or directly to the `Self` type",
+            |diag| {
+                let indent = snippet_indent(cx, span).unwrap_or_default();
+                diag.span_suggestion(
+                    span.shrink_to_lo(),
+                    "add the attribute",
+                    format!("#[must_use] \n{indent}"),
+                    Applicability::MachineApplicable,
+                );
+                if let ty::Adt(adt, _) = ret_ty.kind()
+                    && let Some(span) = cx.tcx.hir_span_if_local(adt.did())
+                {
+                    let indent = snippet_indent(cx, span).unwrap_or_default();
+                    diag.span_suggestion(
+                        span.shrink_to_lo(),
+                        "alternatively, add the attribute to `Self`",
+                        format!("#[must_use] \n{indent}"),
+                        Applicability::Unspecified,
+                    );
+                }
+            },
         );
     }
 }

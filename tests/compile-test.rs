@@ -15,7 +15,7 @@ use serde::Deserialize;
 use test_utils::IS_RUSTC_TEST_SUITE;
 use ui_test::custom_flags::Flag;
 use ui_test::custom_flags::edition::Edition;
-use ui_test::custom_flags::rustfix::RustfixMode;
+use ui_test::custom_flags::rustfix_mode::RustfixMode;
 use ui_test::dependencies::DependencyBuilder;
 use ui_test::spanned::Spanned;
 use ui_test::status_emitter::StatusEmitter;
@@ -192,7 +192,7 @@ impl TestContext {
             defaults.require_annotations = None.into();
         }
         defaults.diagnostic_code_prefix = Some(Spanned::dummy("clippy::".into())).into();
-        defaults.set_custom("rustfix", RustfixMode::Everything);
+        defaults.set_custom("rustfix-mode", RustfixMode::Everything);
         if let Some(collector) = self.diagnostic_collector.clone() {
             defaults.set_custom("diagnostic-collector", collector);
         }

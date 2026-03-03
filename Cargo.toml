@@ -34,7 +34,7 @@ anstream = "0.6.18"
 
 [dev-dependencies]
 cargo_metadata = "0.18.1"
-ui_test = "0.30.2"
+ui_test = "0.31.0"
 regex = "1.5.5"
 serde = { version = "1.0.145", features = ["derive"] }
 serde_json = "1.0.122"
@@ -73,3 +73,6 @@ harness = false
 [lints.rust.unexpected_cfgs]
 level = "warn"
 check-cfg = ['cfg(bootstrap)']
+
+[patch.crates-io]
+ui_test = { path = "../ui_test" }
